@@ -1,6 +1,7 @@
 go 1.22
 
 use (
+    ./services/dataplane-go
     ./services/controlplane-go
     ./services/macert-exporter-go
 )
