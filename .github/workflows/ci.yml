@@ -1,0 +1,33 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  rust:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Cache
+        uses: Swatinem/rust-cache@v2
+      - name: Check
+        run: cargo check --workspace
+      - name: Test
+        run: cargo test --workspace -- --nocapture
+
+  go:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.22"
+      - name: Build controlplane
+        working-directory: services/controlplane-go
+        run: go build -o /dev/null .
+      - name: Build macert
+        working-directory: services/macert-exporter-go
+        run: go build -o /dev/null .
