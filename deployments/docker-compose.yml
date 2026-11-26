@@ -1,0 +1,51 @@
+version: '3.8'
+
+services:
+  nats:
+    image: nats:2.10
+    ports:
+      - "4222:4222"
+
+  postgres:
+    image: timescale/timescaledb:latest-pg16
+    environment:
+      POSTGRES_DB: thewall
+      POSTGRES_USER: thewall
+      POSTGRES_PASSWORD: changeme_sovereign
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  dataplane:
+    build:
+      context: ../services/dataplane-rust
+    environment:
+      - NATS_URL=nats://nats:4222
+      - PLAYBOOKS_DIR=/playbooks
+    volumes:
+      - ../scripts/playbooks-lua:/playbooks:ro
+    ports:
+      - "514:514/udp"
+      - "5140:5140/tcp"
+    depends_on:
+      - nats
+
+  controlplane:
+    build:
+      context: ../services/controlplane-go
+    environment:
+      - NATS_URL=nats://nats:4222
+    depends_on:
+      - nats
+
+  macert-exporter:
+    build:
+      context: ../services/macert-exporter-go
+    environment:
+      - NATS_URL=nats://nats:4222
+    depends_on:
+      - nats
+
+volumes:
+  pgdata:

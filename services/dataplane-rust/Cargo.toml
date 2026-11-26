@@ -1,0 +1,25 @@
+[package]
+name = "dataplane-rust"
+version.workspace = true
+edition.workspace = true
+
+[[bin]]
+name = "dataplane-rust"
+path = "src/main.rs"
+
+[dependencies]
+tokio.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+tracing.workspace = true
+tracing-subscriber.workspace = true
+anyhow.workspace = true
+thiserror.workspace = true
+zerocopy.workspace = true
+mlua.workspace = true
+zeroize.workspace = true
+chrono = { version = "0.4", features = ["serde"] }
+async-nats = "0.37"
+
+[dev-dependencies]
+tokio = { version = "1.40", features = ["full", "test-util"] }
