@@ -23,12 +23,14 @@ impl Playbook {
         let lua = Lua::new();
         {
             let globals = lua.globals();
-            globals.set("log_info", lua.create_function(|_, msg: String| {
-                tracing::info!(target: "lua", playbook = name, "{}", msg);
+            let name_info = name.to_string();
+            globals.set("log_info", lua.create_function(move |_, msg: String| {
+                tracing::info!(target: "lua", playbook = %name_info, "{}", msg);
                 Ok(())
             })?)?;
-            globals.set("log_warn", lua.create_function(|_, msg: String| {
-                tracing::warn!(target: "lua", playbook = name, "{}", msg);
+            let name_warn = name.to_string();
+            globals.set("log_warn", lua.create_function(move |_, msg: String| {
+                tracing::warn!(target: "lua", playbook = %name_warn, "{}", msg);
                 Ok(())
             })?)?;
         }
